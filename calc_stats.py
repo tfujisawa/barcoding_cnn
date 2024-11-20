@@ -43,7 +43,7 @@ for l in [650, 300, 150]:
 		q_e = np.array(q_e)
 		q_u = np.array(q_u)
 		
-		#Compare
+		#Compare each entry with 95% threshold
 		o_q_p = np.array([q_p[q_p[:,0]==i,1][0] for i in o["pred_class1"]])
 		o_q_e = np.array([q_e[q_e[:,0]==i,1][0] for i in o["pred_class1"]])
 		o_q_u =  np.array([q_u[q_u[:,0]==i,1][0] for i in o["pred_class2"]])
