@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import  Adam
 
-import read_sq
+import read_sq2 as read_sq
 import cnn_model3
 
 def mahalanobis_dist(test_x, m, train_x, train_y, nclass):
