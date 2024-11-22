@@ -118,18 +118,11 @@ for l in [650, 300, 150]:
         print (nclass, sqlength)
         print (ealig.shape, ealig_o.shape)
         # continue
-        #m = cnn_model2.initialize_dna_cnn_model(sqn_length=sqlength, nclass=nclass)
         m = cnn_model3.initialize_dna_cnn_model(sqn_length=sqlength, nclass=nclass, filt2=128, drconv=0.15, drfc=0.25)
         print (m.summary())
         m_pu = Model(m.input, m.layers[-3].output)
         m_nsm = Model(m.input, m.layers[-2].output)
         # print (m_nsm.summary())
-
-        #m_d = cnn_model2.initialize_dna_cnn_model(sqn_length=sqlength, nclass=nclass, deconf_layer=True)
-        # m_d = cnn_model3.initialize_dna_cnn_model(sqn_length=sqlength, nclass=nclass, filt2=128, drconv=0.15, drfc=0.25, deconf_layer=True)
-        # # # print (m_d.summary())
-        # m_pul = Model(m_d.input, m_d.layers[-2].output)
-        # # print (m_pul.summary())
 
         train_size = int(samp_class_c.shape[0]*0.7)
         test_size = samp_class_c.shape[0] - train_size
@@ -140,19 +133,11 @@ for l in [650, 300, 150]:
         train_x, test_x, train_y, test_y = train_test_split(ealig,samp_class_c, test_size=test_size, train_size=train_size, stratify=np.argmax(samp_class_c, 1))
 
         #Training Model 1
-        #m.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
         m.compile(optimizer=Adam(amsgrad=True), loss="categorical_crossentropy", metrics=["accuracy"])
         #m.fit(train_x, train_y, epochs=400, verbose=1, validation_data=(test_x, test_y))
         m.fit(train_x, train_y, epochs=500, verbose=1, validation_data=(test_x, test_y))
         #m.fit(train_x, train_y, epochs=700, verbose=1, validation_data=(test_x, test_y))
         #m.fit(train_x, train_y, epochs=800, verbose=1, validation_data=(test_x, test_y))
-
-        #Training Model2
-        # m_d.compile(optimizer=Adam(amsgrad=True), loss="categorical_crossentropy", metrics=["accuracy"])
-        # #m_d.fit(train_x, train_y, epochs=600, verbose=1, validation_data=(test_x, test_y))
-        # m_d.fit(train_x, train_y, epochs=700, verbose=1, validation_data=(test_x, test_y))
-        # #m_d.fit(train_x, train_y, epochs=800, verbose=1, validation_data=(test_x, test_y))
-        #m_d.fit(train_x, train_y, epochs=900, verbose=1, validation_data=(test_x, test_y))
 
         #Output results
         # print(np.sort(np.argmax(m.predict(test_x), axis=1)))
@@ -169,22 +154,11 @@ for l in [650, 300, 150]:
         mah_d = mahalanobis_dist(test_x, m_pu, train_x, train_y, nclass)
         u1 = np.min(mah_d, axis=1) 
 
-        # print ("training acc2:")
-        # print(sum(np.argmax(m_d.predict(train_x), axis=1) == np.argmax(train_y, axis=1))/len(train_y))
-        # print ("test acc2:")
-        # print(sum(np.argmax(m_d.predict(test_x), axis=1) == np.argmax(test_y, axis=1))/len(test_y))
-
-        # u1 = m_d.layers[-1].score_hi(m_pul.predict(test_x))
-        # print (np.mean(u1))
-
-        #exit()
-
         test_class = np.argmax(test_y, axis=1)
         pred_class1 = np.argmax(m.predict(test_x), axis=1)
         pred_prob = np.max(m.predict(test_x), axis=1)
         pred_class2 = np.argmin(mah_d, axis=1)#np.argmax(m_d.predict(test_x), axis=1)
-        # with open("pred.prob.energy.uncertainty.hali10sp2.varlen.m.txt", "a") as f:
-        with open("pred.prob.energy.uncertainty.{0}.varlen.m.txt".format(run_code), "a") as f:
+        with open("pred.prob.metrics.{0}.varlen.txt".format(run_code), "a") as f:
             if k == 0 and l == 650:
                 f.write("length\tk\ttrue_class\tpred_class1\tprob\tenergy\tpred_class2\tuncertainty\n")
             for l1, l2, p, e, l3, u in zip(test_class, pred_class1, pred_prob, enrg, pred_class2, u1):
@@ -201,15 +175,11 @@ for l in [650, 300, 150]:
         mah_d_o = mahalanobis_dist(ealig_o, m_pu, train_x, train_y, nclass)
         u2 = np.min(mah_d_o, axis=1)
 
-        # u2 = m_d.layers[-1].score_hi(m_pul.predict(ealig_o))
-        # print (np.mean(u2))
-
         test_class = -np.ones(len(ealig_o))
         pred_class1 = np.argmax(m.predict(ealig_o), axis=1)
         pred_prob = np.max(m.predict(ealig_o), axis=1)
         pred_class2 = np.argmin(mah_d_o, axis=1)#np.argmax(m_d.predict(ealig_o), axis=1)
-        # with open("pred.prob.energy.uncertainty.ood.hali10sp2.varlen.m.txt", "a") as f:
-        with open("pred.prob.energy.uncertainty.ood.{0}.varlen.m.txt".format(run_code), "a") as f:
+        with open("pred.prob.metrics.ood.{0}.varlen.txt".format(run_code), "a") as f:
             if k == 0 and l == 650:
                 f.write("length\tk\ttrue_class\tpred_class1\tprob\tenergy\tpred_class2\tuncertainty\n")
             for l1, l2, p, e, l3, u in zip(test_class, pred_class1, pred_prob, enrg, pred_class2, u2):
