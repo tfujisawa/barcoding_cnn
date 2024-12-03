@@ -5,7 +5,6 @@ from Bio import AlignIO
 
 import tensorflow as tf
 
-from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Model
 
 import read_sq2 as read_sq
@@ -29,12 +28,8 @@ def grad_cam_energy(model, img_input, last_conv_layer, pred_layers):
         pred = pred_model(tf.reshape(lc_out, (1, lclayer.output.shape[1], lclayer.output.shape[2]))) 
 
         enrg = -tf.math.log(tf.math.reduce_sum(tf.math.exp(pred), axis=1)) #-np.log(np.sum(np.exp(f_nsm), axis=1))#energy=higher for OOD
-        #enrg = tf.math.log(tf.math.reduce_sum(tf.math.exp(pred), axis=1)) #-np.log(np.sum(np.exp(f_nsm), axis=1)) #negative energy=higher for IN
-        # top_pred = tf.argmax(pred[0])
-        # top_class = pred[:,top_pred]
 
     grad = tape.gradient(enrg, lc_out) 
-    # grad = tape.gradient(top_class, lc_out)
     pooled_grad = tf.reduce_mean(grad, axis=(0,1))
 
     out = lc_out.numpy()[0]
@@ -51,7 +46,7 @@ if __name__ == "__main__":
     m = tf.keras.models.load_model(sys.argv[1])##a model
     print (m.summary())
     lcl = m.layers[-8].name#"max_pooling1d_2" #lcl : last convolution layer in string
-    prl = [n.name for n in m.layers[-7:-1]] #prl: prediction layers in a list of strings
+    prl = [n.name for n in m.layers[-7:-1]] #prl: prediction layers EXCLUDING FINAL SOFTMAX in a list of strings
 
     alig = AlignIO.read(sys.argv[2], "fasta")
     print (alig.get_alignment_length())
@@ -67,7 +62,6 @@ if __name__ == "__main__":
     sqn_nam = [s.id for s in alig]
     sqn_nam = np.array(sqn_nam)
     print (sqn_nam.shape)
-
 
     #grad_cam(m, test_x[0:1,:], lcl, prl)
     #test_class = np.argmax(test_y, axis=1)

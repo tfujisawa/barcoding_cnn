@@ -5,7 +5,6 @@ from Bio import AlignIO
 
 import tensorflow as tf
 
-from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Model
 
 import read_sq2 as read_sq
