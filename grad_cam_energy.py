@@ -55,7 +55,7 @@ if __name__ == "__main__":
     l = m.input.shape[1]
     print (l)
     ealig = read_sq.encode_alignment(alig)
-    if l < 680:
+    if l < 650:
         ealig = ealig[:,350:(350+l)] #partial seq
     print (ealig.shape)
 
