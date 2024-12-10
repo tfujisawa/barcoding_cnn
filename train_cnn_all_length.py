@@ -12,13 +12,22 @@ from tensorflow.keras.optimizers import  Adam
 import read_sq2 as read_sq
 import cnn_model3
 
+def energy(test_x, m):
+    #calculate energy scores of test_x with model m
+    #test_x: test data with which scores are calculated
+    #m: model outputs of the final FC layer WITHOUT Softmax
+
+    f_nsm = m.predict(test_x)
+    enrg = -np.log(np.sum(np.exp(f_nsm), axis=1))
+    return (enrg)
+
 def mahalanobis_dist(test_x, m, train_x, train_y, nclass):
-    #calculate mahalanobis distance of test_x1 from classes in training data
+    #calculate mahalanobis distance of test_x1 from class centers in training data with model m
     #test_x: test data with which scores are calculated
     #m: model outputs panultimate layer
-    #train_x
-    #train_y
-    #nclass
+    #train_x: training features
+    #train_y: training labels
+    #nclass: the number of classes
     f_pu_t = m.predict(train_x)
     part_y = np.argmax(train_y, 1)
     sigm = np.array([np.cov(f_pu_t[part_y==i].T) for i in range(nclass)])
@@ -147,8 +156,9 @@ for l in [650, 300, 150]:
         print ("test acc1:")
         print(sum(np.argmax(m.predict(test_x), axis=1) == np.argmax(test_y, axis=1))/len(test_y))
 
-        f_nsm = m_nsm.predict(test_x)
-        enrg = -np.log(np.sum(np.exp(f_nsm), axis=1))
+        #f_nsm = m_nsm.predict(test_x)
+        #enrg = -np.log(np.sum(np.exp(f_nsm), axis=1))
+        enrg = energy(test_x, m_nsm)
         print (np.mean(enrg))
 
         mah_d = mahalanobis_dist(test_x, m_pu, train_x, train_y, nclass)
@@ -168,8 +178,9 @@ for l in [650, 300, 150]:
         ###test with ood samples
         print (np.argmax(m.predict(ealig_o), axis=1))
 
-        f_nsm_o = m_nsm.predict(ealig_o)
-        enrg = -np.log(np.sum(np.exp(f_nsm_o), axis=1))
+        #f_nsm_o = m_nsm.predict(ealig_o)
+        #enrg = -np.log(np.sum(np.exp(f_nsm_o), axis=1))
+        enrg = energy(ealig_o, m_nsm)
         print (np.mean(enrg))
 
         mah_d_o = mahalanobis_dist(ealig_o, m_pu, train_x, train_y, nclass)
