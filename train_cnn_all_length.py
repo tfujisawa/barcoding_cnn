@@ -9,8 +9,8 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import  Adam
 
-import read_sq2 as read_sq
-import cnn_model3
+import dna_cnn.read_sq2 as read_sq
+import dna_cnn.cnn_model3 as cnn_model3
 
 def energy(test_x, m):
     #calculate energy scores of test_x with model m

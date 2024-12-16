@@ -22,7 +22,7 @@ from tensorflow.keras.layers import Concatenate
 # import read_sq
 
 #Generalized ODIN layers
-from DeConf.layers2 import DeConf, _Linear, _CosineRepresentation
+from .DeConf.layers2 import DeConf, _Linear, _CosineRepresentation
 
 
 def initialize_dna_cnn_model(sqn_length, nclass, filt1=64, filt2=32, drconv=0.2, drfc=0.3, deconf_layer=False):

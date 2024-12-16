@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 
 from Bio import AlignIO
@@ -7,8 +8,8 @@ import tensorflow as tf
 
 from tensorflow.keras.models import Model
 
-import read_sq2 as read_sq
-import cnn_model3
+import dna_cnn.read_sq2 as read_sq
+import dna_cnn.cnn_model3 as cnn_model3
 
 def grad_cam(model, img_input, last_conv_layer, pred_layers):
     lclayer = model.get_layer(last_conv_layer)
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     pred_class1 = np.argmax(m.predict(ealig), axis=1)
     print (pred_class1)
     #exit()
-    outfile = "grad.sqn.{0}.txt".format(sys.argv[1].rstrip("\/"))
+    outfile = "grad.sqn.{0}.txt".format(os.path.basename(sys.argv[1].rstrip("\/")))
     print ("writing ", outfile, " ...")
     with open(outfile, "w") as f:
         for i in range(len(ealig)):
