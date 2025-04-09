@@ -51,6 +51,10 @@ def mahalanobis_dist(test_x, m, train_x, train_y, nclass):
         res.append(d)
     return (np.array(res))
 
+#Analysis type
+dataset_small = False
+sqn_error = False
+
 #Read in-group samples
 ##Read fasta file
 alig = AlignIO.read(sys.argv[1], "fasta")
@@ -104,6 +108,11 @@ if len(sys.argv) >= 6:
 else:
     run_code = ""
 
+if dataset_small:
+    run_code = run_code + "S"
+if sqn_error:
+    run_code = run_code + "E0.02"
+
 #Model construction
 nclass = samp_class_c.shape[1]
 # sqlength = ealig.shape[1]
@@ -135,11 +144,28 @@ for l in [650, 300, 150]:
 
         train_size = int(samp_class_c.shape[0]*0.7)
         test_size = samp_class_c.shape[0] - train_size
-        #train_size = train_size//2 #Reduce training size ##CHECK THIS###
+        if dataset_small: #When dataset size flag is True, halve the training set
+            train_size = train_size//2 #Reduce training size ##CHECK THIS###
         print ("train:{0} test:{1}".format(train_size, test_size))
         #exit()
-        #train_x, test_x, train_y, test_y = train_test_split(ealig,samp_class_c, test_size=test_size, train_size=train_size)
-        train_x, test_x, train_y, test_y = train_test_split(ealig,samp_class_c, test_size=test_size, train_size=train_size, stratify=np.argmax(samp_class_c, 1))
+        
+        if sqn_error: #When sqn error flag is True, overwrite alignments with noised ones 
+            index = np.array([i for i in range(len(ealig))])
+            train_i, test_i, train_y, test_y = train_test_split(index, samp_class_c, test_size=test_size, train_size=train_size, stratify=np.argmax(samp_class_c, 1))
+ 	
+            train_x = ealig[train_i,:]
+
+            ealig_err = list(read_sq.encode_alignment_withError(alig, n=1, e=0.02))[0]
+            ealig_o_err = list(read_sq.encode_alignment_withError(alig_o, n=1, e=0.02))[0]
+            if l == 650:
+                test_x = ealig_err[test_i,:]
+                ealig_o = ealig_o_err
+            else:
+                test_x = ealig_err[test_i,350:(350+l)]
+                ealig_o = ealig_o_err[:,350:(350+l)]
+
+        else:
+            train_x, test_x, train_y, test_y = train_test_split(ealig,samp_class_c, test_size=test_size, train_size=train_size, stratify=np.argmax(samp_class_c, 1))
 
         #Training Model 1
         m.compile(optimizer=Adam(amsgrad=True), loss="categorical_crossentropy", metrics=["accuracy"])
