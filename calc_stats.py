@@ -64,6 +64,7 @@ fnr = pd.DataFrame(fnr, columns=("l", "k", "Err.p", "Err.e", "Err.u", "Err.mv"))
 res = pd.merge(acc, fnr)
 res.insert(0, "code", [code for i in range(res.shape[0])], True)
 
-#print(res)
+print ("Oveall accuracy and FNR:")
+print(res.iloc[:,3:8].mean(axis=0))
 res.to_csv(f"stats.{code}.txt", sep="\t", index=False)
 
