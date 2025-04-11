@@ -18,7 +18,8 @@ O["energy"] = -O["energy"]
 #Calculate baseline accuracy
 acc = []
 for l in [650, 300, 150]:
-	for k in range(20):
+	k_max = np.max(X[X["length"]==l]["k"])
+	for k in range(k_max+1):
 		x = X[np.logical_and(X["length"]==l, X["k"]==k)]
 		
 		Acc0 = np.sum(x["true_class"]==x["pred_class1"])/x.shape[0]
@@ -30,7 +31,8 @@ acc = pd.DataFrame(acc, columns=("l", "k", "Acc"))
 #Calculate FNR
 fnr = []
 for l in [650, 300, 150]:
-	for k in range(20):
+	k_max = np.max(X[X["length"]==l]["k"])
+	for k in range(k_max+1):
 		x = X[np.logical_and(X["length"]==l, X["k"]==k)]
 		o = O[np.logical_and(O["length"]==l, O["k"]==k)]
 		
