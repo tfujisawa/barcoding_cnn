@@ -11,6 +11,7 @@ from tensorflow.keras.optimizers import  Adam
 
 import dna_cnn.read_sq2 as read_sq
 import dna_cnn.cnn_model3 as cnn_model3
+import dna_cnn.ood_fn as ood_fn
 
 def energy(test_x, m):
     #calculate energy scores of test_x with model m
@@ -184,10 +185,10 @@ for l in [650, 300, 150]:
 
         #f_nsm = m_nsm.predict(test_x)
         #enrg = -np.log(np.sum(np.exp(f_nsm), axis=1))
-        enrg = energy(test_x, m_nsm)
+        enrg = ood_fn.energy(test_x, m_nsm)
         print (np.mean(enrg))
 
-        mah_d = mahalanobis_dist(test_x, m_pu, train_x, train_y, nclass)
+        mah_d = ood_fn.mahalanobis_dist(test_x, m_pu, train_x, train_y, nclass)
         u1 = np.min(mah_d, axis=1) 
 
         test_class = np.argmax(test_y, axis=1)
@@ -206,12 +207,12 @@ for l in [650, 300, 150]:
 
         #f_nsm_o = m_nsm.predict(ealig_o)
         #enrg = -np.log(np.sum(np.exp(f_nsm_o), axis=1))
-        enrg = energy(ealig_o, m_nsm)
+        enrg = ood_fn.energy(ealig_o, m_nsm)
         print (np.mean(enrg))
 
-        mah_d_o = mahalanobis_dist(ealig_o, m_pu, train_x, train_y, nclass)
+        mah_d_o = ood_fn.mahalanobis_dist(ealig_o, m_pu, train_x, train_y, nclass)
         u2 = np.min(mah_d_o, axis=1)
-
+	
         test_class = -np.ones(len(ealig_o))
         pred_class1 = np.argmax(m.predict(ealig_o), axis=1)
         pred_prob = np.max(m.predict(ealig_o), axis=1)
