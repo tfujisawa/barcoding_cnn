@@ -13,45 +13,6 @@ import dna_cnn.read_sq2 as read_sq
 import dna_cnn.cnn_model3 as cnn_model3
 import dna_cnn.ood_fn as ood_fn
 
-def energy(test_x, m):
-    #calculate energy scores of test_x with model m
-    #test_x: test data with which scores are calculated
-    #m: model outputs of the final FC layer WITHOUT Softmax
-
-    f_nsm = m.predict(test_x)
-    enrg = -np.log(np.sum(np.exp(f_nsm), axis=1))
-    return (enrg)
-
-def mahalanobis_dist(test_x, m, train_x, train_y, nclass):
-    #calculate mahalanobis distance of test_x1 from class centers in training data with model m
-    #test_x: test data with which scores are calculated
-    #m: model outputs panultimate layer
-    #train_x: training features
-    #train_y: training labels
-    #nclass: the number of classes
-    f_pu_t = m.predict(train_x)
-    part_y = np.argmax(train_y, 1)
-    sigm = np.array([np.cov(f_pu_t[part_y==i].T) for i in range(nclass)])
-    sigm = np.mean(sigm, axis=0) #tied covariance matrix
-    # print(sigm.shape)
-    # print(sigm)
-    # print(np.linalg.det(sigm))
-    # sigm_inv = np.linalg.inv(sigm)
-    sigm_inv = np.linalg.pinv(sigm)
-
-    mu_c = [np.mean(f_pu_t[part_y==i,], axis=0) for i in range(nclass)]
-    mu_c = np.array(mu_c)
-
-    f_pu = m.predict(test_x)
-
-    res = []
-    for i in range(len(f_pu)):
-        d = [(f_pu[i,:] - mu_c[k,:])@sigm_inv@(f_pu[i,:]-mu_c[k,:]).T for k in range(nclass)]
-        #mah_pred.append(np.argmin(d))
-        #d = np.min(d)
-        res.append(d)
-    return (np.array(res))
-
 #Analysis type
 dataset_small = False
 sqn_error = False
@@ -91,8 +52,6 @@ print (np.all(samp_nam == sqn_nam))
 ##Read out-of-distribution samples
 alig_o = AlignIO.read(sys.argv[3], "fasta")
 ealig_o0 = read_sq.encode_alignment(alig_o)
-# print (m.predict(ealig_o))
-# print (np.argmax(m.predict(ealig_o), axis=1))
 
 o_nam = []
 o_class = []
@@ -126,9 +85,7 @@ for l in [650, 300, 150]:
         ealig_o = ealig_o0
     else:
         ealig = ealig0[:,350:(350+l),:]
-        #ealig = ealig0[:,50:(50+l),:]
         ealig_o = ealig_o0[:,350:(350+l),:]
-        #ealig_o = ealig_o0[:,50:(50+l),:]
 
     sqlength = ealig.shape[1]
 
@@ -141,7 +98,6 @@ for l in [650, 300, 150]:
         print (m.summary())
         m_pu = Model(m.input, m.layers[-3].output)
         m_nsm = Model(m.input, m.layers[-2].output)
-        # print (m_nsm.summary())
 
         train_size = int(samp_class_c.shape[0]*0.7)
         test_size = samp_class_c.shape[0] - train_size
@@ -172,12 +128,8 @@ for l in [650, 300, 150]:
         m.compile(optimizer=Adam(amsgrad=True), loss="categorical_crossentropy", metrics=["accuracy"])
         #m.fit(train_x, train_y, epochs=400, verbose=1, validation_data=(test_x, test_y))
         m.fit(train_x, train_y, epochs=500, verbose=1, validation_data=(test_x, test_y))
-        #m.fit(train_x, train_y, epochs=700, verbose=1, validation_data=(test_x, test_y))
-        #m.fit(train_x, train_y, epochs=800, verbose=1, validation_data=(test_x, test_y))
 
         #Output results
-        # print(np.sort(np.argmax(m.predict(test_x), axis=1)))
-        # print(np.sort(np.argmax(test_y, axis=1)))
         print ("training acc1:")
         print(sum(np.argmax(m.predict(train_x), axis=1) == np.argmax(train_y, axis=1))/len(train_y))
         print ("test acc1:")
@@ -205,8 +157,6 @@ for l in [650, 300, 150]:
         ###test with ood samples
         print (np.argmax(m.predict(ealig_o), axis=1))
 
-        #f_nsm_o = m_nsm.predict(ealig_o)
-        #enrg = -np.log(np.sum(np.exp(f_nsm_o), axis=1))
         enrg = ood_fn.energy(ealig_o, m_nsm)
         print (np.mean(enrg))
 
