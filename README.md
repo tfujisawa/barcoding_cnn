@@ -74,7 +74,7 @@ This code calculates performance metrics such as accuracy and false negative rat
 ```
 python train_save_model.py in.fa sp.table.in.txt ood.fa sp.table.ood.txt run_code
 ```
-This code trains and saves models for barcoding classification. Saved models are later used to run GradCAM-related codes or other applications. Models are saved in files, model.[run_code].650.keras
+This code trains and saves models for barcoding classification. Saved models are later used to run GradCAM-related codes or other applications. Models are saved in files, model.[run_code].{650,300,150}.keras. Models for three fragment lengths are saved.
 Input files are identical to the ones for train_cnn_all_length.py.
 
 #### grad_cam.py and grad_cam_energy.py:
@@ -93,11 +93,11 @@ This time grad-energy scores for ood samples are calculated.
 ### Data files:
 The "data" folder contains a data set for testing. They are sequence alignments in Fasta format and class labels in comma-delimited texts.
 
-drosophila_NA.15sp.in.fa : Fasta alignment file of in-distribution samples
-drosophila_NA.49sp.out.fa : Fasta alignment file of out-of-distribution samples
+- drosophila_NA.15sp.in.fa : Fasta alignment file of in-distribution samples
+- drosophila_NA.49sp.out.fa : Fasta alignment file of out-of-distribution samples
 
-sp.table.drosophila_NA.in.15sp.txt : a comma separated text file for ID sample labels
-sp.table.drosophila_NA.out.49sp.txt : a comma separated text file for OOD sample labels
+- sp.table.drosophila_NA.in.15sp.txt : a comma separated text file for ID sample labels
+- sp.table.drosophila_NA.out.49sp.txt : a comma separated text file for OOD sample labels
 
-Full datasets are available for download at Dryad data repositry.
+Full datasets are available for download at Dryad data repositry. (link)
 
