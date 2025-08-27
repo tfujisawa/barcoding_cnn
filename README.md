@@ -24,13 +24,13 @@ https://www.anaconda.com/
 After installing Anaconda, use the following commands in Anaconda Prompt to create and activate an environment for running the codes.
 
 ```
-conda creat -n barcoding_cnn python=3.10 
+conda create -n barcoding_cnn python=3.10 
 
 conda activate barcoding_cnn
 ```
 
 Then, install required libraries with pip.
-(**Following commands must be run in the activated conda environment**.)
+(**Following commands must be run in the activated conda environment. Don't run them in the "base" environment.**)
 ```
 pip install -r requirements.txt
 ```
