@@ -100,7 +100,13 @@ for l in [650, 300, 150]:
 
     #Training Model
     m.compile(optimizer=Adam(amsgrad=True), loss="categorical_crossentropy", metrics=["accuracy"])
-    m.fit(train_x, train_y, epochs=400, verbose=1, validation_data=(test_x, test_y))
+    hist = m.fit(train_x, train_y, epochs=500, verbose=1, validation_data=(test_x, test_y))
+
+    #To output losses, uncomment this part.
+    #loss = hist.history["loss"]
+    #vloss = hist.history["val_loss"]
+    #np.savetxt(f"loss.{l}.txt", loss, delimiter=",", fmt="%f")
+    #np.savetxt(f"val_loss.{l}.txt", vloss, delimiter=",", fmt="%f") 
 
     #Output results
     print ("training acc1:")
