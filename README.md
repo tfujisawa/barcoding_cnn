@@ -15,7 +15,7 @@ http://linktothemanuscript
 * pandas
 * Biopython 
 
-Library versions used in the analyses is listed in "requirements.txt".
+Library versions used in the analyses are listed in "requirements.txt".
 
 ## Creating an environment with conda:
 If you are not familiar with how to manage Python environments, using Anaconda is probably the easiest option.
