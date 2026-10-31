@@ -4,10 +4,9 @@ Codes in this repository are for performance evaluation of deep learning models 
 
 The model can detect such OOD samples by calculating metrics for OOD detection. Currently, we implement simple three metrics, softmax probability, energy score and Mahalanobis distance score.  
 
-The details of the studies are presented in the manuscript available at the following link.
+The details of the studies are presented in the paper available at the following link.
 
-http://linktothemanuscript
-
+https://onlinelibrary.wiley.com/doi/full/10.1002/ece3.73112
 
 ## Requirments:
 * Keras & Tensorflow (Only Keras 2.XX. Keras >= 3.0 is not supported)
